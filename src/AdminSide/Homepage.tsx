@@ -1,7 +1,7 @@
 import { ShoppingBag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import backgroundImage from '../assets/background-hero.png';
-import ProductCards from '../Components/ProductCards';
+import ProductCards from './ProductCards';
 
 const Homepage = () => {
     const scrollToProducts = () => {
