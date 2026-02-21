@@ -10,87 +10,42 @@ export const useAuth = () => {
         try {
             setLoading(true);
             setError(null);
-            const data = await AUTH_APIS.login(credentials);
-            setUser(data);
-            if (data.token) {
-                localStorage.setItem("token", data.token);
+
+            // Fixed credential check
+            const FIXED_EMAIL = "goldleafadmin@yopmail.com";
+            const FIXED_PASSWORD = "admin123";
+
+            if (credentials.email === FIXED_EMAIL && credentials.password === FIXED_PASSWORD) {
+                const data = await AUTH_APIS.login(credentials);
+                setUser(data);
+                if (data.token) {
+                    localStorage.setItem("token", data.token);
+                }
+                localStorage.setItem("isAdminLoggedIn", "true");
+                return data;
+            } else {
+                const errorMsg = "Invalid email or password";
+                setError(errorMsg);
+                throw new Error(errorMsg);
             }
-            return data;
         } catch (err: any) {
-            setError(err?.response?.data?.message || "Login failed. Please check your credentials.");
+            const message = err.message || "Login failed. Please check your credentials.";
+            setError(message);
             throw err;
         } finally {
             setLoading(false);
         }
     };
 
-    const verifyOtp = async (body: any) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await AUTH_APIS.verifyOtp(body);
-            return data;
-        } catch (err: any) {
-            setError(err?.response?.data?.message || "OTP verification failed.");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const resendOtp = async (email: string) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await AUTH_APIS.resendOtp({ email });
-            return data;
-        } catch (err: any) {
-            setError(err?.response?.data?.message || "Failed to resend OTP.");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const forgotPassword = async (email: string) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await AUTH_APIS.forgotPassword({ email });
-            return data;
-        } catch (err: any) {
-            setError(err?.response?.data?.message || "Failed to initiate password reset.");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const resetPassword = async (body: any) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await AUTH_APIS.resetPassword(body);
-            return data;
-        } catch (err: any) {
-            setError(err?.response?.data?.message || "Failed to reset password.");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem("token");
+        localStorage.removeItem("isAdminLoggedIn");
     };
 
     return {
         login,
-        verifyOtp,
-        resendOtp,
-        forgotPassword,
-        resetPassword,
         logout,
         user,
         loading,

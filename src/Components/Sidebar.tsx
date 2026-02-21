@@ -59,12 +59,12 @@ const Sidebar = () => {
                 </nav>
             </div>
 
-            <div className="mt-auto p-6 border-t border-[#d4af37]/10">
+            <div className="mt-auto p-6 border-t  border-[#d4af37]/10">
                 <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-3 px-4 py-3 w-full rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/5 transition-all duration-300 group"
+                    className="flex items-center space-x-3 cursor-pointer px-4 py-3 w-full rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/5 transition-all duration-300 group"
                 >
-                    <LogOut className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                    <LogOut className="h-5 w-5 cursor-pointer group-hover:rotate-12 transition-transform" />
                     <span className="font-medium tracking-wide">Logout</span>
                 </button>
             </div>

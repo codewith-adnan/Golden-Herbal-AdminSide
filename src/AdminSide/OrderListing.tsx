@@ -2,15 +2,39 @@
 import { useState } from 'react';
 import { Trash2, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useOrders } from './UseHooks';
+import { useOrders, useOrderActions } from './UseHooks';
 import Pagination from '../Components/Pagination';
+import DeleteConfirmModal from '../Components/DeleteConfirmModal';
+import { showToast } from '../Components/CustomToast';
 
 const OrderListing = () => {
     const [page, setPage] = useState(0);
     const limit = 10;
     const offset = page * limit;
 
-    const { orders, total, loading, error } = useOrders(offset, limit);
+    const { orders, total, loading, error, refresh } = useOrders(offset, limit);
+    const { deleteOrder } = useOrderActions();
+
+    // State for delete modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [orderToDelete, setOrderToDelete] = useState<{ id: number; name: string } | null>(null);
+
+    const handleDeleteClick = (id: number, name: string) => {
+        setOrderToDelete({ id, name });
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!orderToDelete) return;
+        try {
+            await deleteOrder(orderToDelete.id);
+            showToast("Order deleted successfully", "success");
+            refresh();
+        } catch (err) {
+            console.error("Delete failed:", err);
+            showToast("Failed to delete order", "error");
+        }
+    };
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -85,14 +109,19 @@ const OrderListing = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end space-x-2">
+                                            <div className="flex justify-end items-center gap-1.5">
                                                 <Link
                                                     to={`/orders/${order.id}`}
-                                                    className="p-2 text-gray-400 hover:text-[#d4af37] hover:bg-[#d4af37]/10 border border-transparent hover:border-[#d4af37]/20 rounded-lg transition-all active:scale-90"
+                                                    className="p-1.5 text-gray-400 hover:text-[#d4af37] hover:bg-[#d4af37]/10 border border-transparent hover:border-[#d4af37]/40 rounded-lg transition-all active:scale-95"
+                                                    title="View Details"
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </Link>
-                                                <button className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 border border-transparent hover:border-red-500/20 rounded-lg transition-all active:scale-90">
+                                                <button
+                                                    onClick={() => handleDeleteClick(order.id, order.customer_name)}
+                                                    className="p-1.5 text-gray-400 hover:text-red-500 cursor-pointer hover:bg-red-500/10 border border-transparent hover:border-red-500/40 rounded-lg transition-all active:scale-95"
+                                                    title="Delete Order"
+                                                >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>
                                             </div>
@@ -118,6 +147,14 @@ const OrderListing = () => {
                     onPageChange={(newPage) => setPage(newPage)}
                 />
             </div>
+
+            {/* Premium Delete Confirmation Modal */}
+            <DeleteConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                itemName={orderToDelete ? `Order #${orderToDelete.id} (${orderToDelete.name})` : undefined}
+            />
         </div>
     );
 };

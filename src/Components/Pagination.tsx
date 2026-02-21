@@ -32,7 +32,7 @@ const Pagination: React.FC<PaginationProps> = ({ total, offset, limit, onPageCha
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 0}
-                    className="p-2 border border-[#d4af37]/20 rounded-lg text-gray-400 hover:text-[#d4af37] hover:bg-[#d4af37]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    className="p-2 border border-[#d4af37]/20 cursor-pointer rounded-lg text-gray-400 hover:text-[#d4af37] hover:bg-[#d4af37]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     title="Previous Page"
                 >
                     <ChevronLeft className="h-4 w-4" />
@@ -43,9 +43,9 @@ const Pagination: React.FC<PaginationProps> = ({ total, offset, limit, onPageCha
                         <button
                             key={p}
                             onClick={() => onPageChange(p)}
-                            className={`min-w-[36px] h-9 px-2 rounded-lg border transition-all text-sm font-medium ${currentPage === p
-                                    ? 'bg-[#d4af37]/20 border-[#d4af37] text-[#d4af37]'
-                                    : 'border-[#d4af37]/10 text-gray-400 hover:border-[#d4af37]/30 hover:text-gray-200 hover:bg-white/5'
+                            className={`min-w-[36px] h-9 px-2 rounded-lg border transition-all cursor-pointer text-sm font-medium ${currentPage === p
+                                ? 'bg-[#d4af37]/20 border-[#d4af37] text-[#d4af37]'
+                                : 'border-[#d4af37]/10 text-gray-400 hover:border-[#d4af37]/30 hover:text-gray-200 hover:bg-white/5'
                                 }`}
                         >
                             {p + 1}
@@ -56,7 +56,7 @@ const Pagination: React.FC<PaginationProps> = ({ total, offset, limit, onPageCha
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages - 1}
-                    className="p-2 border border-[#d4af37]/20 rounded-lg text-gray-400 hover:text-[#d4af37] hover:bg-[#d4af37]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    className="p-2 border border-[#d4af37]/20 cursor-pointer rounded-lg text-gray-400 hover:text-[#d4af37] hover:bg-[#d4af37]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     title="Next Page"
                 >
                     <ChevronRight className="h-4 w-4" />

@@ -119,3 +119,22 @@ export const useProductActions = () => {
 
     return { createProduct, updateProduct, deleteProduct, loading, error };
 };
+export const useOrderActions = () => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const deleteOrder = async (id: number) => {
+        try {
+            setLoading(true);
+            setError(null);
+            return await ORDER_LISTING_APIS.deleteOrder(id);
+        } catch (err: any) {
+            setError(err?.response?.data?.message || "Failed to delete order");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { deleteOrder, loading, error };
+};

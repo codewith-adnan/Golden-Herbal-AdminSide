@@ -1,4 +1,4 @@
-import { getMethod } from "../../utils/http-methods";
+import { getMethod, deleteMethod } from "../../utils/http-methods";
 
 export interface OrderItem {
     id: number;
@@ -40,4 +40,7 @@ export const ORDER_LISTING_APIS = {
 
     orderDetail: (id: number) =>
         getMethod<Order>(API_ENDPOINTS.ORDER_DETAIL(id)),
+
+    deleteOrder: (id: number) =>
+        deleteMethod<void>(API_ENDPOINTS.ORDER_DETAIL(id)),
 };

@@ -12,7 +12,6 @@ console.log("API Base URL:", import.meta.env.VITE_API_BASE_URL);
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("token");
-        console.log("🔑 axiosInstance: Token found in localStorage:", !!token);
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -34,11 +33,7 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response?.status === 401) {
-            console.error("🔒 Unauthorized! Redirecting to login...");
-            localStorage.removeItem("token");
-            window.location.href = "/login";
-        }
+        console.error(`❌ API Error: [${error.config?.url}]`, error.response?.data || error.message);
         return Promise.reject(error);
     }
 );

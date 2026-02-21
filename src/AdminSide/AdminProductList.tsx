@@ -3,20 +3,33 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useProducts, useProductActions } from "./UseHooks";
+import DeleteConfirmModal from "../Components/DeleteConfirmModal";
+import { showToast } from "../Components/CustomToast";
 
 const AdminProductList = () => {
     const [viewAll, setViewAll] = useState(false);
     const { products, loading, error, refresh } = useProducts();
     const { deleteProduct } = useProductActions();
 
-    const handleDelete = async (id: number) => {
-        if (window.confirm("Are you sure you want to delete this product?")) {
-            try {
-                await deleteProduct(id);
-                refresh();
-            } catch (err) {
-                console.error("Delete failed:", err);
-            }
+    // State for delete modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<{ id: number, name: string } | null>(null);
+
+    const handleDeleteClick = (id: number, name: string) => {
+        setProductToDelete({ id, name });
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!productToDelete) return;
+
+        try {
+            await deleteProduct(productToDelete.id);
+            showToast("Product deleted successfully", "success");
+            refresh();
+        } catch (err) {
+            console.error("Delete failed:", err);
+            showToast("Failed to delete product", "error");
         }
     };
 
@@ -110,8 +123,8 @@ const AdminProductList = () => {
                                             Edit
                                         </Link>
                                         <button
-                                            onClick={() => handleDelete(product.id)}
-                                            className="flex items-center justify-center p-2.5 bg-red-500/5 border border-red-500/10 rounded-xl text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all active:scale-95"
+                                            onClick={() => handleDeleteClick(product.id, product.name)}
+                                            className="flex items-center justify-center cursor-pointer p-2.5 bg-red-500/5 border border-red-500/10 rounded-xl text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all active:scale-95"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -134,6 +147,14 @@ const AdminProductList = () => {
                     )}
                 </>
             )}
+
+            {/* Premium Delete Confirmation Modal */}
+            <DeleteConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                itemName={productToDelete?.name}
+            />
         </div>
     );
 };

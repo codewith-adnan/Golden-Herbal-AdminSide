@@ -3,6 +3,7 @@ import { Upload, Save } from 'lucide-react';
 import { useProductActions } from './UseHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PRODUCT_APIS } from '../libs/api/createproduct.api';
+import { showToast } from '../Components/CustomToast';
 
 const AddProduct = () => {
     const { id } = useParams();
@@ -94,12 +95,15 @@ const AddProduct = () => {
             console.log(`Submitting form (${isEdit ? 'UPDATE' : 'CREATE'})...`);
             if (isEdit) {
                 await updateProduct(Number(id), data);
+                showToast("Product updated successfully", "success");
             } else {
                 await createProduct(data);
+                showToast("Product created successfully", "success");
             }
             navigate('/products');
         } catch (err) {
             console.error("Failed to save product:", err);
+            showToast(`Failed to ${isEdit ? 'update' : 'create'} product`, "error");
         }
     };
 

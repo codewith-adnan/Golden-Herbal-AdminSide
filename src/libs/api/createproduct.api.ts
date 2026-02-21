@@ -31,13 +31,6 @@ export const PRODUCT_ENDPOINTS = {
     ADMIN_BY_ID: (id: number) => `/gold/admin/products/${id}`,
 };
 
-const getHeaders = () => {
-    const token = localStorage.getItem("token");
-    return {
-        Authorization: `Bearer ${token}`,
-    };
-};
-
 export const PRODUCT_APIS = {
     // Get all products (paginated)
     getProducts: (params: any) =>
@@ -49,21 +42,21 @@ export const PRODUCT_APIS = {
 
     // Create a new product (multipart/form-data)
     createProduct: async (formData: FormData) => {
-        const headers = {
-            ...getHeaders(),
-            "Content-Type": "multipart/form-data",
-        };
-        const response = await axiosInstance.post(PRODUCT_ENDPOINTS.ADMIN_BASE, formData, { headers });
+        const response = await axiosInstance.post(PRODUCT_ENDPOINTS.ADMIN_BASE, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        });
         return response.data;
     },
 
     // Update an existing product (multipart/form-data)
     updateProduct: async (id: number, formData: FormData) => {
-        const headers = {
-            ...getHeaders(),
-            "Content-Type": "multipart/form-data",
-        };
-        const response = await axiosInstance.put(PRODUCT_ENDPOINTS.ADMIN_BY_ID(id), formData, { headers });
+        const response = await axiosInstance.put(PRODUCT_ENDPOINTS.ADMIN_BY_ID(id), formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        });
         return response.data;
     },
 
