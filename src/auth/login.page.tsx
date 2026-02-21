@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "./UseAuth";
 import { Mail, Lock, Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
     const { login, loading, error } = useAuth();
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         password: ""
     });
+
+    useEffect(() => {
+        const isLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
+        const token = localStorage.getItem("token");
+        if (isLoggedIn && token) {
+            navigate("/orders");
+        }
+    }, [navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,8 +28,7 @@ const LoginPage = () => {
         e.preventDefault();
         try {
             await login(formData);
-            // Redirect logic would go here, e.g., navigate("/admin/orders")
-            window.location.href = "/orders";
+            navigate("/orders");
         } catch (err) {
             console.error("Login failed:", err);
         }
