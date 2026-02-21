@@ -1,8 +1,16 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ClipboardList, LayoutGrid, LogOut, Leaf } from 'lucide-react';
+import { useAuth } from '../auth/UseAuth';
 
 const Sidebar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { logout } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     const menuItems = [
         { icon: ClipboardList, label: 'Order List', path: '/orders' },
@@ -52,7 +60,10 @@ const Sidebar = () => {
             </div>
 
             <div className="mt-auto p-6 border-t border-[#d4af37]/10">
-                <button className="flex items-center space-x-3 px-4 py-3 w-full rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/5 transition-all duration-300 group">
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-3 px-4 py-3 w-full rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/5 transition-all duration-300 group"
+                >
                     <LogOut className="h-5 w-5 group-hover:rotate-12 transition-transform" />
                     <span className="font-medium tracking-wide">Logout</span>
                 </button>

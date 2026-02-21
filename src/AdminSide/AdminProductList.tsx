@@ -2,61 +2,23 @@ import { Plus, Edit2, Trash2, Package, Scale } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import card1 from "../assets/card1.PNG";
-import card2 from "../assets/card2.PNG";
-import card3 from "../assets/card3.PNG";
+import { useProducts, useProductActions } from "./UseHooks";
 
 const AdminProductList = () => {
     const [viewAll, setViewAll] = useState(false);
+    const { products, loading, error, refresh } = useProducts();
+    const { deleteProduct } = useProductActions();
 
-    // Mock Data based on your JSON schema
-    const products = [
-        {
-            id: 1,
-            name: "Classic Gold Leaf",
-            description: "Premium hand-picked organic green tea leaves for ultimate wellness.",
-            price: 2500,
-            weight: "250g",
-            stock_quantity: 15,
-            image: card1,
-        },
-        {
-            id: 2,
-            name: "Herbal Zen Mist",
-            description: "A calming mixture of ancient herbs designed to revitalize your spirit.",
-            price: 3200,
-            weight: "150g",
-            stock_quantity: 8,
-            image: card2,
-        },
-        {
-            id: 3,
-            name: "Botanical Bloom",
-            description: "Rare floral infusions blended with pure golden herbal extracts.",
-            price: 4500,
-            weight: "200g",
-            stock_quantity: 5,
-            image: card3,
-        },
-        {
-            id: 4,
-            name: "Royal Oolong",
-            description: "Traditional semi-oxidized tea with a rich, complex flavor profile.",
-            price: 3800,
-            weight: "200g",
-            stock_quantity: 12,
-            image: card1,
-        },
-        {
-            id: 5,
-            name: "Silver Needle White",
-            description: "Gentle and delicate white tea made from the youngest buds.",
-            price: 5500,
-            weight: "100g",
-            stock_quantity: 3,
-            image: card2,
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Are you sure you want to delete this product?")) {
+            try {
+                await deleteProduct(id);
+                refresh();
+            } catch (err) {
+                console.error("Delete failed:", err);
+            }
         }
-    ];
+    };
 
     const displayedProducts = viewAll ? products : products.slice(0, 3);
 
@@ -80,78 +42,98 @@ const AdminProductList = () => {
                 </Link>
             </div>
 
-            {/* Grid Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedProducts.map((product) => (
-                    <motion.div
-                        key={product.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="group relative bg-[#111111] border border-[#d4af37]/10 rounded-[24px] p-4 hover:border-[#d4af37]/30 transition-all duration-300 shadow-xl overflow-hidden"
-                    >
-                        {/* Image Area */}
-                        <div className="relative h-48 w-full rounded-2xl overflow-hidden mb-4 bg-[#0a0a0a]">
-                            <img
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            {loading && !products.length ? (
+                <div className="flex justify-center items-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d4af37]"></div>
+                </div>
+            ) : error ? (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-center">
+                    {error}
+                </div>
+            ) : (
+                <>
+                    {/* Grid Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {displayedProducts.map((product) => (
+                            <motion.div
+                                key={product.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="group relative bg-[#111111] border border-[#d4af37]/10 rounded-[24px] p-4 hover:border-[#d4af37]/30 transition-all duration-300 shadow-xl overflow-hidden"
+                            >
+                                {/* Image Area */}
+                                <div className="relative h-48 w-full rounded-2xl overflow-hidden mb-4 bg-[#0a0a0a]">
+                                    <img
+                                        src={product.image_url || product.image}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
-                            {/* Stock Badge */}
-                            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
-                                <Package size={12} className="text-[#d4af37]" />
-                                <span className="text-[10px] font-bold text-white uppercase">{product.stock_quantity} In Stock</span>
-                            </div>
-                        </div>
-
-                        {/* Content */}
-                        <div className="space-y-3">
-                            <div className="flex justify-between items-start">
-                                <h3 className="text-xl font-serif font-bold text-[#d5dbe6] truncate pr-2">
-                                    {product.name}
-                                </h3>
-                                <div className="text-[#d4af37] font-bold">
-                                    <span className="text-xs mr-1">Rs.</span>
-                                    {product.price}
+                                    {/* Stock Badge */}
+                                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
+                                        <Package size={12} className="text-[#d4af37]" />
+                                        <span className="text-[10px] font-bold text-white uppercase">{product.stock_quantity} In Stock</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
-                                {product.description}
-                            </p>
+                                {/* Content */}
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <h3 className="text-xl font-serif font-bold text-[#d5dbe6] truncate pr-2">
+                                            {product.name}
+                                        </h3>
+                                        <div className="text-[#d4af37] font-bold">
+                                            <span className="text-xs mr-1">Rs.</span>
+                                            {product.price}
+                                        </div>
+                                    </div>
 
-                            <div className="flex items-center gap-4 text-[10px] text-gray-400 font-medium uppercase tracking-widest pt-1">
-                                <div className="flex items-center gap-1">
-                                    <Scale size={12} className="text-[#d4af37]/60" />
-                                    {product.weight}
+                                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
+                                        {product.description}
+                                    </p>
+
+                                    <div className="flex items-center gap-4 text-[10px] text-gray-400 font-medium uppercase tracking-widest pt-1">
+                                        <div className="flex items-center gap-1">
+                                            <Scale size={12} className="text-[#d4af37]/60" />
+                                            {product.weight}
+                                        </div>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="flex gap-2 pt-4">
+                                        <Link
+                                            to={`/edit-product/${product.id}`}
+                                            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 text-xs font-bold hover:bg-[#d4af37]/10 hover:text-[#d4af37] hover:border-[#d4af37]/30 transition-all active:scale-95"
+                                        >
+                                            <Edit2 size={14} />
+                                            Edit
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(product.id)}
+                                            className="flex items-center justify-center p-2.5 bg-red-500/5 border border-red-500/10 rounded-xl text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all active:scale-95"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </motion.div>
+                        ))}
+                    </div>
 
-                            {/* Actions */}
-                            <div className="flex gap-2 pt-4">
-                                <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 text-xs font-bold hover:bg-[#d4af37]/10 hover:text-[#d4af37] hover:border-[#d4af37]/30 transition-all active:scale-95">
-                                    <Edit2 size={14} />
-                                    Edit
-                                </button>
-                                <button className="flex items-center justify-center p-2.5 bg-red-500/5 border border-red-500/10 rounded-xl text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all active:scale-95">
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
+                    {/* View All Toggle */}
+                    {products.length > 3 && (
+                        <div className="flex justify-center pt-8">
+                            <button
+                                onClick={() => setViewAll(!viewAll)}
+                                className="px-8 py-3 bg-[#111111] border border-[#d4af37]/20 text-[#d4af37] rounded-xl font-bold text-sm tracking-widest hover:bg-[#d4af37]/10 hover:border-[#d4af37]/50 transition-all transform hover:scale-105"
+                            >
+                                {viewAll ? "SHOW LESS" : "VIEW ALL PRODUCTS"}
+                            </button>
                         </div>
-                    </motion.div>
-                ))}
-            </div>
-
-            {/* View All Toggle */}
-            <div className="flex justify-center pt-8">
-                <button
-                    onClick={() => setViewAll(!viewAll)}
-                    className="px-8 py-3 bg-[#111111] border border-[#d4af37]/20 text-[#d4af37] rounded-xl font-bold text-sm tracking-widest hover:bg-[#d4af37]/10 hover:border-[#d4af37]/50 transition-all transform hover:scale-105"
-                >
-                    {viewAll ? "SHOW LESS" : "VIEW ALL PRODUCTS"}
-                </button>
-            </div>
+                    )}
+                </>
+            )}
         </div>
     );
 };

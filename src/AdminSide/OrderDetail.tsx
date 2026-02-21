@@ -12,17 +12,21 @@ const OrderDetail = () => {
 
     useEffect(() => {
         const fetchDetail = async () => {
+            console.log(`🔄 OrderDetail: fetchDetail called for ID: ${id}`);
             try {
                 setLoading(true);
+                setError(null);
                 const data = await ORDER_LISTING_APIS.orderDetail(Number(id));
+                console.log("✅ OrderDetail: fetchDetail success:", data);
                 setOrder(data);
             } catch (err: any) {
-                setError(err?.response?.data?.message || "Failed to fetch order details");
+                console.error("❌ OrderDetail: fetchDetail error:", err);
+                setError(err?.response?.data?.message || err.message || "Failed to fetch order details");
             } finally {
                 setLoading(false);
             }
         };
-        fetchDetail();
+        if (id) fetchDetail();
     }, [id]);
 
     const getStatusColor = (status: string) => {
@@ -95,11 +99,37 @@ const OrderDetail = () => {
                             </h3>
                         </div>
                         <div className="p-6 space-y-6">
-                            {/* In a real app, you'd map over order items here. 
-                                Since the current schema doesn't show items, we display the total. */}
-                            <div className="flex justify-between items-center py-4 border-b border-white/5">
-                                <span className="text-gray-400">Total Amount</span>
-                                <span className="text-xl font-bold text-[#d4af37]">Rs. {order.total_amount.toLocaleString()}</span>
+                            {/* Items List */}
+                            <div className="space-y-4">
+                                {order.order_items && order.order_items.length > 0 ? (
+                                    order.order_items.map((item, index) => (
+                                        <div key={index} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
+                                            <div className="flex flex-col">
+                                                <span className="text-white font-medium">{item.product_name || "Herbal Tea Blend"}</span>
+                                                <div className="flex gap-4 mt-1">
+                                                    <span className="text-[10px] text-gray-500 uppercase tracking-widest">
+                                                        Qty: <span className="text-[#d4af37]">{item.quantity}</span>
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-500 uppercase tracking-widest">
+                                                        Weight: <span className="text-[#d4af37]">{item.weight || "N/A"}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <span className="text-white font-medium">
+                                                Rs. {((item.price || 0) * item.quantity).toLocaleString()}
+                                            </span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="py-4 border-b border-white/5">
+                                        <p className="text-gray-500 italic text-sm">No items found in this order detail.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex justify-between items-center pt-4 border-t border-[#d4af37]/20">
+                                <span className="text-gray-400 font-medium">Grand Total</span>
+                                <span className="text-2xl font-bold text-[#d4af37]">Rs. {order.total_amount.toLocaleString()}</span>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 pt-4">

@@ -1,5 +1,13 @@
 import { getMethod } from "../../utils/http-methods";
 
+export interface OrderItem {
+    id: number;
+    quantity: number;
+    weight: string;
+    product_name?: string;
+    price?: number;
+}
+
 export interface Order {
     id: number;
     customer_name: string;
@@ -10,6 +18,7 @@ export interface Order {
     total_amount: number;
     order_status: string;
     createdAt: string;
+    order_items?: OrderItem[];
 }
 
 export interface OrderListResponse {
