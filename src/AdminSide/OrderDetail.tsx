@@ -110,9 +110,7 @@ const OrderDetail = () => {
                                                     <span className="text-[10px] text-gray-500 uppercase tracking-widest">
                                                         Qty: <span className="text-[#d4af37]">{item.quantity}</span>
                                                     </span>
-                                                    <span className="text-[10px] text-gray-500 uppercase tracking-widest">
-                                                        Weight: <span className="text-[#d4af37]">{item.weight || "N/A"}</span>
-                                                    </span>
+
                                                 </div>
                                             </div>
                                             <span className="text-white font-medium">

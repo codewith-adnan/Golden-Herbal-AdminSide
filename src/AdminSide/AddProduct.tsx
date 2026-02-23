@@ -43,7 +43,14 @@ const AddProduct = () => {
                         category: (product as any).category || 'Green Tea',
                         is_active: product.is_active ?? true
                     });
-                    setPreview(product.image_url || product.image || null);
+                    const rawUrl = product.image_url || product.image;
+                    if (rawUrl) {
+                        const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://13.60.168.111";
+                        const pathPart = rawUrl.replace(/^https?:\/\/[^/]+/, '').replace(/^\//, '');
+                        setPreview(`${baseUrl}/${pathPart}`);
+                    } else {
+                        setPreview(null);
+                    }
                 } catch (err: any) {
                     console.error("Failed to load product for editing:", err);
                     setFetchError(err.response?.data?.message || "Failed to load product details. Please check if ID is correct.");
@@ -148,7 +155,23 @@ const AddProduct = () => {
                             >
                                 {preview ? (
                                     <>
-                                        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                                        <img
+                                            src={preview}
+                                            alt="Preview"
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                const img = e.currentTarget;
+                                                const currentSrc = img.src;
+                                                if (!currentSrc.includes('/gold/') && !currentSrc.startsWith('data:')) {
+                                                    const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://13.60.168.111";
+                                                    // Extract path from current broken URL to avoid double prefixing
+                                                    const pathPart = currentSrc.replace(/^https?:\/\/[^/]+/, '').replace(/^\//, '');
+                                                    const retryUrl = `${baseUrl}/gold/${pathPart}`;
+                                                    img.src = retryUrl;
+                                                    console.log("🔄 Preview Image Retry (/gold/):", retryUrl);
+                                                }
+                                            }}
+                                        />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <Upload className="h-8 w-8 text-white" />
                                         </div>

@@ -68,7 +68,7 @@ const AdminProductList = () => {
                     <>
                         {/* Grid Section */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {displayedProducts.map((product) => (
+                            {displayedProducts.map((product, index) => (
                                 <motion.div
                                     key={product.id}
                                     initial={{ opacity: 0, y: 20 }}
@@ -78,11 +78,56 @@ const AdminProductList = () => {
                                     {/* Image Area */}
                                     <div className="relative h-48 w-full rounded-2xl overflow-hidden mb-4 bg-[#0a0a0a]">
                                         <img
-                                            src={product.image_url || product.image}
+                                            src={(() => {
+                                                const rawUrl = product.image_url || product.image;
+                                                if (!rawUrl) return '';
+
+                                                const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://13.60.168.111";
+
+                                                // Robust extraction: get the part after the domain if it's an absolute URL
+                                                // Matches: http://anything:port/path -> /path
+                                                // Or just /path -> /path
+                                                const pathPart = rawUrl.replace(/^https?:\/\/[^/]+/, '').replace(/^\//, '');
+                                                const finalUrl = `${baseUrl}/${pathPart}`;
+
+                                                if (index === 0) {
+                                                    console.log("🔍 Cleaned Product Path:", { rawUrl, pathPart, finalUrl });
+                                                }
+                                                return finalUrl;
+                                            })()}
                                             alt={product.name}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            onError={(e) => {
+                                                const img = e.currentTarget;
+                                                const currentSrc = img.src;
+
+                                                // If already tried /gold/, stop to prevent infinite loops
+                                                if (currentSrc.includes('/gold/')) {
+                                                    console.error(`❌ Image PERMANENTLY failed for [${product.name}]:`, currentSrc);
+                                                    return;
+                                                }
+
+                                                const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://13.60.168.111";
+                                                const rawUrl = product.image_url || product.image || '';
+                                                const pathPart = rawUrl.replace(/^https?:\/\/[^/]+/, '').replace(/^\//, '');
+
+                                                // Try adding /gold/ prefix if not already present in the pathPart
+                                                const retryUrl = `${baseUrl}/gold/${pathPart}`;
+
+                                                console.log(`🔄 Image Retry (/gold/) for [${product.name}]:`, {
+                                                    oldSrc: currentSrc,
+                                                    newSrc: retryUrl
+                                                });
+                                                img.src = retryUrl;
+                                            }}
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+
+                                        {/* Weight Badge */}
+                                        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
+                                            <Scale size={12} className="text-[#d4af37]" />
+                                            <span className="text-[10px] font-bold text-white uppercase">{product.weight}</span>
+                                        </div>
 
                                         {/* Stock Badge */}
                                         <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
@@ -94,7 +139,7 @@ const AdminProductList = () => {
                                     {/* Content */}
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-start">
-                                            <h3 className="text-xl font-serif font-bold text-[#d5dbe6] truncate pr-2">
+                                            <h3 className="text-lg font-serif font-bold text-[#d5dbe6] truncate pr-2">
                                                 {product.name}
                                             </h3>
                                             <div className="text-[#d4af37] font-bold">
@@ -107,12 +152,7 @@ const AdminProductList = () => {
                                             {product.description}
                                         </p>
 
-                                        <div className="flex items-center gap-4 text-[10px] text-gray-400 font-medium uppercase tracking-widest pt-1">
-                                            <div className="flex items-center gap-1">
-                                                <Scale size={12} className="text-[#d4af37]/60" />
-                                                {product.weight}
-                                            </div>
-                                        </div>
+
 
                                         {/* Actions */}
                                         <div className="flex gap-2 pt-4">
