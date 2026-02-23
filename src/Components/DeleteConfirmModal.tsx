@@ -59,7 +59,7 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemName }: DeleteConf
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="absolute top-5 right-5 p-2 text-gray-500 hover:text-[#d4af37] hover:bg-white/5 rounded-xl transition-all"
+                            className="absolute top-5 right-5 cursor-pointer p-2 text-gray-500 hover:text-[#d4af37] hover:bg-white/5 rounded-xl transition-all"
                         >
                             <X size={18} />
                         </button>
@@ -82,7 +82,7 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemName }: DeleteConf
                             <div className="flex flex-row gap-3 w-full">
                                 <button
                                     onClick={onClose}
-                                    className="flex-1 py-3 bg-white/5 border border-[#d4af37]/20 text-[#d4af37] font-black rounded-xl hover:bg-white/10 transition-all active:scale-95 text-[10px] uppercase tracking-[0.1em]"
+                                    className="flex-1 py-3 bg-white/5 cursor-pointer border border-[#d4af37]/20 text-[#d4af37] font-black rounded-xl hover:bg-white/10 transition-all active:scale-95 text-[10px] uppercase tracking-[0.1em]"
                                 >
                                     Cancel
                                 </button>
@@ -91,7 +91,7 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemName }: DeleteConf
                                         onConfirm();
                                         onClose();
                                     }}
-                                    className="flex-1 py-3 bg-gradient-to-r from-red-600 to-red-800 text-white font-black rounded-xl hover:opacity-90 transition-all active:scale-95 text-[10px] uppercase tracking-[0.1em]"
+                                    className="flex-1 py-3 cursor-pointer bg-gradient-to-r from-red-600 to-red-800 text-white font-black rounded-xl hover:opacity-90 transition-all active:scale-95 text-[10px] uppercase tracking-[0.1em]"
                                 >
                                     Delete Permanently
                                 </button>

@@ -18,7 +18,7 @@ const Sidebar = () => {
     ];
 
     return (
-        <aside className="w-64 bg-[#0a0a0a] border-r border-[#d4af37]/20 flex flex-col h-full bg-gradient-to-b from-[#0a0a0a] to-[#050505]">
+        <aside className="w-64 flex-shrink-0 bg-[#0a0a0a] border-r border-[#d4af37]/20 flex flex-col h-full bg-gradient-to-b from-[#0a0a0a] to-[#050505]">
             <div className="p-6">
                 {/* Scaled down Header Logo */}
                 <Link to="/" className="flex items-center space-x-3 group mb-10">
