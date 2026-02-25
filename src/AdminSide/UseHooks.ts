@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { ORDER_LISTING_APIS, type Order } from "../libs/api/admin.orders.api";
 import { PRODUCT_APIS, type Product } from "../libs/api/createproduct.api";
+import { ORDER_STATUS_APIS } from "../libs/api/order-status.api";
+import toast from "react-hot-toast";
 
 // Order Hooks
 export const useOrders = (offset = 0, limit = 10, status?: string) => {
@@ -58,7 +60,9 @@ export const useProducts = (offset = 0, limit = 10) => {
         try {
             setLoading(true);
             const data = await PRODUCT_APIS.getProducts({ offset, limit });
-            setProducts(data.data);
+            // Sort products by ID descending (newest first)
+            const sortedProducts = [...data.data].sort((a, b) => b.id - a.id);
+            setProducts(sortedProducts);
             setTotal(data.total);
         } catch (err: any) {
             setError(err?.response?.data?.message || "Failed to fetch products");
@@ -137,4 +141,28 @@ export const useOrderActions = () => {
     };
 
     return { deleteOrder, loading, error };
+};
+
+export const useOrderStatus = () => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const updateOrderStatus = async (id: number, status: string) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await ORDER_STATUS_APIS.updateOrderStatus(id, status);
+            toast.success(`Order status updated to ${status}`);
+            return response;
+        } catch (err: any) {
+            const errorMessage = err?.response?.data?.message || "Failed to update order status";
+            setError(errorMessage);
+            toast.error(errorMessage);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { updateOrderStatus, loading, error };
 };

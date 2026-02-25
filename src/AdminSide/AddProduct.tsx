@@ -4,6 +4,7 @@ import { useProductActions } from './UseHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PRODUCT_APIS } from '../libs/api/createproduct.api';
 import { showToast } from '../Components/CustomToast';
+import CategoryDropdown from './CategoryDropdown';
 
 const AddProduct = () => {
     const { id } = useParams();
@@ -205,17 +206,11 @@ const AddProduct = () => {
 
                             <div className="space-y-2">
                                 <label className="block text-xs font-bold uppercase tracking-widest text-[#aa8930]">Category</label>
-                                <select
-                                    name="category"
+                                <CategoryDropdown
                                     value={formData.category}
-                                    onChange={handleInputChange}
-                                    className="w-full bg-[#0a0a0a] border border-[#d4af37]/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d4af37] transition-colors appearance-none"
-                                >
-                                    <option>Green Tea</option>
-                                    <option>Herbal Infusion</option>
-                                    <option>Black Tea</option>
-                                    <option>Wellness Blend</option>
-                                </select>
+                                    onChange={(val) => setFormData(prev => ({ ...prev, category: val }))}
+                                    disabled={saving}
+                                />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -287,14 +282,14 @@ const AddProduct = () => {
                         <button
                             type="button"
                             onClick={() => navigate(-1)}
-                            className="px-6 py-3 rounded-full text-gray-400 font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-colors"
+                            className="px-6 py-3 rounded-full cursor-pointer text-gray-400 font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={saving}
-                            className="px-10 py-3 bg-gradient-to-r from-[#d4af37] to-[#b89530] text-black rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] disabled:opacity-50 disabled:scale-100 flex items-center space-x-2"
+                            className="px-10 py-3 bg-gradient-to-r cursor-pointer from-[#d4af37] to-[#b89530] text-black rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] disabled:opacity-50 disabled:scale-100 flex items-center space-x-2"
                         >
                             {saving ? (
                                 <div className="h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />

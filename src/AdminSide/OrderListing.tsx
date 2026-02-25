@@ -1,8 +1,9 @@
 
 import { useState } from 'react';
-import { Trash2, Eye } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useOrders, useOrderActions } from './UseHooks';
+import { useOrders, useOrderActions, useOrderStatus } from './UseHooks';
+import StatusDropdown from './StatusDropdown';
 import Pagination from '../Components/Pagination';
 import DeleteConfirmModal from '../Components/DeleteConfirmModal';
 import { showToast } from '../Components/CustomToast';
@@ -14,6 +15,7 @@ const OrderListing = () => {
 
     const { orders, total, loading, error, refresh } = useOrders(offset, limit);
     const { deleteOrder } = useOrderActions();
+    const { updateOrderStatus, loading: updating } = useOrderStatus();
 
     // State for delete modal
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -33,16 +35,6 @@ const OrderListing = () => {
         } catch (err) {
             console.error("Delete failed:", err);
             showToast("Failed to delete order", "error");
-        }
-    };
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'Pending': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
-            case 'Shipped': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-            case 'Delivered': return 'text-green-500 bg-green-500/10 border-green-500/20';
-            case 'Processing': return 'text-purple-500 bg-purple-500/10 border-purple-500/20';
-            default: return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
         }
     };
 
@@ -105,9 +97,13 @@ const OrderListing = () => {
                                             <td className="px-6 py-4 text-gray-400 text-sm">{new Date(order.createdAt).toLocaleDateString()}</td>
                                             <td className="px-6 py-4 text-gray-200 font-medium">Rs. {order.total_amount.toLocaleString()}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(order.order_status)}`}>
-                                                    {order.order_status}
-                                                </span>
+                                                <StatusDropdown
+                                                    currentStatus={order.order_status}
+                                                    onStatusChange={(newStatus) => {
+                                                        updateOrderStatus(order.id, newStatus).then(() => refresh());
+                                                    }}
+                                                    disabled={updating}
+                                                />
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex justify-end items-center gap-1.5">

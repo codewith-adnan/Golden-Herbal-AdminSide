@@ -2,6 +2,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ORDER_LISTING_APIS, type Order } from "../libs/api/admin.orders.api";
 import { ArrowLeft, User, Mail, Phone, MapPin, CreditCard, Calendar, Clock, ShoppingBag } from "lucide-react";
+import { useOrderStatus } from "./UseHooks";
+import StatusDropdown from "./StatusDropdown";
 
 const OrderDetail = () => {
     const { id } = useParams();
@@ -10,32 +12,35 @@ const OrderDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const { updateOrderStatus, loading: updating } = useOrderStatus();
+
+    const fetchDetail = async () => {
+        console.log(`🔄 OrderDetail: fetchDetail called for ID: ${id}`);
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await ORDER_LISTING_APIS.orderDetail(Number(id));
+            console.log("✅ OrderDetail: fetchDetail success:", data);
+            setOrder(data);
+        } catch (err: any) {
+            console.error("❌ OrderDetail: fetchDetail error:", err);
+            setError(err?.response?.data?.message || err.message || "Failed to fetch order details");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchDetail = async () => {
-            console.log(`🔄 OrderDetail: fetchDetail called for ID: ${id}`);
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await ORDER_LISTING_APIS.orderDetail(Number(id));
-                console.log("✅ OrderDetail: fetchDetail success:", data);
-                setOrder(data);
-            } catch (err: any) {
-                console.error("❌ OrderDetail: fetchDetail error:", err);
-                setError(err?.response?.data?.message || err.message || "Failed to fetch order details");
-            } finally {
-                setLoading(false);
-            }
-        };
         if (id) fetchDetail();
     }, [id]);
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'Pending': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
-            case 'Shipped': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-            case 'Delivered': return 'text-green-500 bg-green-500/10 border-green-500/20';
-            case 'Processing': return 'text-purple-500 bg-purple-500/10 border-purple-500/20';
-            default: return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
+    const handleStatusUpdate = async (newStatus: string) => {
+        if (!order) return;
+        try {
+            await updateOrderStatus(order.id, newStatus);
+            fetchDetail(); // Refresh order details
+        } catch (error) {
+            console.error("Failed to update status:", error);
         }
     };
 
@@ -83,9 +88,11 @@ const OrderDetail = () => {
                         </p>
                     </div>
                 </div>
-                <div className={`px-4 py-2 rounded-full text-sm font-bold border ${getStatusColor(order.order_status)} inline-block`}>
-                    {order.order_status}
-                </div>
+                <StatusDropdown
+                    currentStatus={order.order_status}
+                    onStatusChange={handleStatusUpdate}
+                    disabled={updating}
+                />
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

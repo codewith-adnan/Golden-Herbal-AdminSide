@@ -180,7 +180,7 @@ const AdminProductList = () => {
                             <div className="flex justify-center pt-8">
                                 <button
                                     onClick={() => setViewAll(!viewAll)}
-                                    className="px-8 py-3 bg-[#111111] border border-[#d4af37]/20 text-[#d4af37] rounded-xl font-bold text-sm tracking-widest hover:bg-[#d4af37]/10 hover:border-[#d4af37]/50 transition-all transform hover:scale-105"
+                                    className="px-4 py-2 bg-transparent text-[#d4af37] font-bold text-sm tracking-widest hover:underline transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.8)] cursor-pointer"
                                 >
                                     {viewAll ? "SHOW LESS" : "VIEW ALL PRODUCTS"}
                                 </button>
