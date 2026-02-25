@@ -233,19 +233,12 @@ const OrderDetail = () => {
                                                 <span className="text-gray-400 font-mono text-sm tracking-tighter">Rs. {(item.price || 0).toLocaleString()}</span>
                                             </td>
                                             <td className="px-8 py-6 text-right font-black text-white text-xl tracking-tighter">
-                                                Rs. {((item.price || 0) * item.quantity).toLocaleString()}
+                                                Rs. {order.total_amount.toLocaleString()}
                                             </td>
                                         </tr>
                                     ))}
                                     {/* Grand Total Row directly in the table footer area */}
-                                    <tr className="bg-[#d4af37]/5">
-                                        <td colSpan={4} className="px-8 py-8 text-right text-[10px] uppercase tracking-[0.5em] text-[#aa8930] font-black">
-                                            Grand Total Selection
-                                        </td>
-                                        <td className="px-8 py-8 text-right text-[#d4af37] text-3xl font-serif font-black tracking-tighter">
-                                            Rs. {order.total_amount.toLocaleString()}
-                                        </td>
-                                    </tr>
+
                                 </>
                             ) : (
                                 <tr>
