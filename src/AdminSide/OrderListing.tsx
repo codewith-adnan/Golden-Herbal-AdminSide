@@ -32,9 +32,10 @@ const OrderListing = () => {
             await deleteOrder(orderToDelete.id);
             showToast("Order deleted successfully", "success");
             refresh();
-        } catch (err) {
+        } catch (err: any) {
             console.error("Delete failed:", err);
-            showToast("Failed to delete order", "error");
+            const errorMessage = err?.response?.data?.message || err.message || "Failed to delete order";
+            showToast(errorMessage, "error");
         }
     };
 
