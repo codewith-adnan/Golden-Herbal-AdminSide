@@ -8,8 +8,8 @@ import AdminProductList from '../AdminSide/AdminProductList';
 import LoginPage from '../auth/login.page';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    const isLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
-    const token = localStorage.getItem("token");
+    const isLoggedIn = sessionStorage.getItem("isAdminLoggedIn") === "true";
+    const token = sessionStorage.getItem("token");
     if (!isLoggedIn || !token) {
         return <Navigate to="/login" replace />;
     }

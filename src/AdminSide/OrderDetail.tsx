@@ -4,6 +4,7 @@ import { ORDER_LISTING_APIS, type Order } from "../libs/api/admin.orders.api";
 import { ArrowLeft, User, Mail, Phone, MapPin, CreditCard, Calendar, Clock, ShoppingBag } from "lucide-react";
 import { useOrderStatus } from "./UseHooks";
 import StatusDropdown from "./StatusDropdown";
+import { showToast } from "../Components/CustomToast";
 
 const OrderDetail = () => {
     const { id } = useParams();
@@ -38,9 +39,11 @@ const OrderDetail = () => {
         if (!order) return;
         try {
             await updateOrderStatus(order.id, newStatus);
+            showToast(`Order ${newStatus.toLowerCase()} successfully`, "success");
             fetchDetail(); // Refresh order details
         } catch (error) {
             console.error("Failed to update status:", error);
+            showToast("Failed to update order status", "error");
         }
     };
 

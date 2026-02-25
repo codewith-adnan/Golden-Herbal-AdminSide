@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "./UseAuth";
-import { Mail, Lock, Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -13,8 +13,8 @@ const LoginPage = () => {
     });
 
     useEffect(() => {
-        const isLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
-        const token = localStorage.getItem("token");
+        const isLoggedIn = sessionStorage.getItem("isAdminLoggedIn") === "true";
+        const token = sessionStorage.getItem("token");
         if (isLoggedIn && token) {
             navigate("/orders");
         }
@@ -60,8 +60,9 @@ const LoginPage = () => {
                     {/* Form Section */}
                     <form onSubmit={handleSubmit} className="p-8 space-y-6">
                         {error && (
-                            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-xs text-center animate-shake">
-                                {error}
+                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-sm font-medium text-center animate-shake flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                                <AlertCircle className="w-4 h-4" />
+                                <span>{error}</span>
                             </div>
                         )}
 
@@ -115,7 +116,7 @@ const LoginPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-gradient-to-r  cursor-pointer from-[#d4af37] to-[#aa8930] text-black font-bold rounded-2xl hover:opacity-90 transition-all active:scale-[0.98] shadow-[0_10px_30px_rgba(212,175,55,0.2)] flex items-center justify-center gap-2 group"
+                            className="w-full py-4 bg-gradient-to-r cursor-pointer from-[#d4af37] to-[#aa8930] text-black font-bold rounded-2xl hover:opacity-90 transition-all active:scale-[0.98] shadow-[0_20px_40px_-15px_rgba(212,175,55,0.6)] flex items-center justify-center gap-2 group mt-4"
                         >
                             {loading ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />

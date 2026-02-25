@@ -23,14 +23,27 @@ const getStatusColor = (status: string) => {
 
 const StatusDropdown: React.FC<StatusDropdownProps> = ({ currentStatus, onStatusChange, disabled }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [openUpwards, setOpenUpwards] = useState(false);
+    const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+    const toggleDropdown = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (disabled) return;
+
+        if (!isOpen && buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            // If less than 200px below, open upwards
+            setOpenUpwards(spaceBelow < 200);
+        }
+        setIsOpen(!isOpen);
+    };
 
     return (
         <div className="relative">
             <button
-                onClick={(e) => {
-                    e.stopPropagation();
-                    !disabled && setIsOpen(!isOpen);
-                }}
+                ref={buttonRef}
+                onClick={toggleDropdown}
                 disabled={disabled}
                 className={`flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl text-[11px] font-bold border transition-all duration-300 min-w-[120px] cursor-pointer ${getStatusColor(currentStatus)} ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-[0_0_15px_rgba(212,175,55,0.2)] active:scale-95'}`}
             >
@@ -54,10 +67,10 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ currentStatus, onStatus
                             }}
                         />
                         <motion.div
-                            initial={{ opacity: 0, y: 5, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 3, scale: 1 }}
-                            exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                            className="absolute left-0 top-full z-[70] mt-1 w-40 bg-[#161616] border border-[#d4af37]/20 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.6),0_0_15px_rgba(212,175,55,0.1)] overflow-hidden backdrop-blur-xl"
+                            initial={{ opacity: 0, y: openUpwards ? -5 : 5, scale: 0.95 }}
+                            animate={{ opacity: 1, y: openUpwards ? -3 : 3, scale: 1 }}
+                            exit={{ opacity: 0, y: openUpwards ? -5 : 5, scale: 0.95 }}
+                            className={`absolute left-0 z-[70] w-40 bg-[#161616] border border-[#d4af37]/20 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.6),0_0_15px_rgba(212,175,55,0.1)] overflow-hidden backdrop-blur-xl ${openUpwards ? "bottom-full mb-1" : "top-full mt-1"}`}
                         >
                             <div className="py-1">
                                 {statusOptions.map((option) => (

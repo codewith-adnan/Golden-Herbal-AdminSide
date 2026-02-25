@@ -45,7 +45,7 @@ const CustomToast = ({ t, message, type = "success" }: CustomToastProps) => {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className={`w-full max-w-sm ${theme.bg} ${theme.border} border rounded-2xl shadow-2xl overflow-hidden pointer-events-auto`}
+            className={`w-full max-w-xs ${theme.bg} ${theme.border} border rounded-2xl shadow-2xl overflow-hidden pointer-events-auto`}
         >
             <div className="p-4 flex items-center gap-4">
                 <div className="flex-shrink-0">

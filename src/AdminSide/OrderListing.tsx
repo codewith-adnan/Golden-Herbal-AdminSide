@@ -100,7 +100,10 @@ const OrderListing = () => {
                                                 <StatusDropdown
                                                     currentStatus={order.order_status}
                                                     onStatusChange={(newStatus) => {
-                                                        updateOrderStatus(order.id, newStatus).then(() => refresh());
+                                                        updateOrderStatus(order.id, newStatus).then(() => {
+                                                            refresh();
+                                                            showToast(`Order ${newStatus.toLowerCase()} successfully`, "success");
+                                                        });
                                                     }}
                                                     disabled={updating}
                                                 />

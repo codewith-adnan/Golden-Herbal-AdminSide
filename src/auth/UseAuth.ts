@@ -19,9 +19,9 @@ export const useAuth = () => {
                 const data = await AUTH_APIS.login(credentials);
                 setUser(data);
                 if (data.token) {
-                    localStorage.setItem("token", data.token);
+                    sessionStorage.setItem("token", data.token);
                 }
-                localStorage.setItem("isAdminLoggedIn", "true");
+                sessionStorage.setItem("isAdminLoggedIn", "true");
                 return data;
             } else {
                 const errorMsg = "Invalid email or password";
@@ -40,8 +40,8 @@ export const useAuth = () => {
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("isAdminLoggedIn");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("isAdminLoggedIn");
     };
 
     return {
